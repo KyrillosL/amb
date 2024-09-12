@@ -12,6 +12,12 @@ Convert a wav file to MIDI
 MIDI files will be generated in the `midi` folder
 - Place the files you want to try in the `Examples Files` folder
 
+## Output 
+- Generated MIDI Files (`midi` folder)
+- Audio files split at onset (`cut_files` folder)
+- Preprocessed to mono files (`preprocessed` folder)
+- Preprocessed (filtered) files (`filtered` folder)
+
 ## Missing Features 
 The level (note velocity) hasn't been implemented yet
 
@@ -41,9 +47,9 @@ Legato notes are not supported yet (`bass_4`). I shouldn't rely only on onset de
 - [ ] [Feature] Implement Level (note velocity)
 - [ ] [Feature] Adaptive threshold to extract note duration
 - [ ] [Feature] Legato
-- [ ] [EVALUATION] Compare different backend (madmom vs librosa) and method to extract features
-- [ ] [EVALUATION] Compute a score for onset detection and pitch detection
-- [ ] [EVALUATION] Regenerate the audio file from the MIDI file to compare them (in progress)
+- [ ] [Evaluation] Compare different backend (madmom vs librosa) and method to extract features
+- [ ] [Evaluation] Compute a score for onset detection and pitch detection
+- [ ] [Evaluation] Regenerate the audio file from the MIDI file to compare them (in progress)
 - [ ] [Preprocessing] Remove stereo sides
 - [ ] [MISC] Output the LabeledAudio class to csv
 - [ ] [MISC] Display all features extracted in a plot
