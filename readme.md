@@ -1,26 +1,46 @@
 # Audio to Midi (Bass)
 Convert a wav file to MIDI
 
+### I used a 4 bar loop of the 'bass_2' to test the script. The best results are with this file
+
 ---
 
 ## How to use 
 
 - Install deps `pip install -r requirements.txt`
 - Run the `main.py` file to test with the demo audio bass file
-- The MIDI file will be generated in the `folder`
+MIDI files will be generated in the `midi` folder
 - Place the files you want to try in the `Examples Files` folder
+
+## Missing Features 
+The level (note velocity) hasn't been implemented yet
 
 ## Issues
 
 These issues have been found with the cut audio bass file provided
 
-### First note is wrong
-The first note is a E2 (note 40, freq 82) instead of a f2 (41, 87).
+### Onset Detection
+There is an offset in the onset detection, it should be improved, the backtracking isn't perfect. 
+Todo -> Trim the silence / test other backend such as madmom (wip)
+
+### Pitch Tracking
+In addition to the inaccuracy of crepe, and due to the onset detection, we sometimes retrieve the wrong note pitch.
 It seems that due to the librosa backtracking, the notes are shifted by an amount of frames, thus, when looking at the pitch in the table we look at the wrong note (shifted)
-Todo -> trim start silence to get the correct index
+Todo -> trim start silence to get the correct index 
+
+### Note duration
+The note duration is wrong with some files (ex `bass_0`). The threshold to detect the silence should be adaptive
+
+### MIDI File is trimmed 
+The generated midi file is trimmed to the first note (must be from the used lib). For the Bass 1 it musts be realigned
+ 
+### Legato
+Legato notes are not supported yet (`bass_4`). I shouldn't rely only on onset detection to create note, but also on the pitch content variation
 
 ## Todo
-- [ ] [Feature] Extract note level to get MIDI note duration
+- [ ] [Feature] Implement Level (note velocity)
+- [ ] [Feature] Adaptive threshold to extract note duration
+- [ ] [Feature] Legato
 - [ ] [EVALUATION] Compare different backend (madmom vs librosa) and method to extract features
 - [ ] [EVALUATION] Compute a score for onset detection and pitch detection
 - [ ] [EVALUATION] Regenerate the audio file from the MIDI file to compare them (in progress)
