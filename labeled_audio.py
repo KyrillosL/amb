@@ -3,7 +3,8 @@ from pathlib import Path
 
 import librosa
 import matplotlib.pyplot as plt
-from librosa.beat import tempo
+import numpy as np
+
 from loguru import logger
 
 import constants
@@ -11,8 +12,8 @@ import preprocess
 from audio_utils import load_audio_from_path, write_audio_to_path
 from midi_file_generator import MidiFileGenerator
 from musical import get_pitch
-from temporal import detect_onset_librosa, get_tempo, get_note_duration_for_onset, cut_audio_files
-from temporal import get_onset_envelope, get_onset_envelope_tempo
+from temporal import detect_onset_librosa, get_tempo, get_note_duration_for_onset, cut_audio_files, get_rms
+from temporal import get_onset_envelope, get_onset_envelope_tempo, get_volume
 
 
 def get_freq_at_onset_sample(onset_sample, freq_index_second, freq):
@@ -28,17 +29,18 @@ def get_freq_at_onset_sample(onset_sample, freq_index_second, freq):
 
 
 class Note:
-    def __init__(self, start_sample, duration_sample, freq):
+    def __init__(self, start_sample, duration_sample, freq, volume):
         self.start_sample = start_sample
         self.start_second = librosa.core.samples_to_time(start_sample, sr=constants.SAMPLERATE)
         self.duration_sample = duration_sample
         self.duration_second = librosa.core.samples_to_time(duration_sample, sr=constants.SAMPLERATE)
         self.freq = freq
         self.midi_note_number = int(librosa.hz_to_midi(freq)) + 12
+        self.volume = volume
 
     def __repr__(self):
         return 'Start ' + str(self.start_second), ' duration ' + str(self.duration_second) + ' note ' + str(
-            self.midi_note_number)
+            self.midi_note_number) + ' volume ' + str(self.volume)
 
 
 class LabeledAudio:
@@ -51,6 +53,9 @@ class LabeledAudio:
 
         # Audio Loading
         self.audio_buffer = load_audio_from_path(file, constants.SAMPLERATE)
+        self.rms = get_rms(audio_buffer=self.audio_buffer)
+        self.min_rms = np.min(self.rms)
+        self.max_rms = np.max(self.rms)
         self.onset_envelope = get_onset_envelope(self.audio_buffer)
 
         times = librosa.times_like(self.onset_envelope, sr=constants.SAMPLERATE)
@@ -93,13 +98,14 @@ class LabeledAudio:
         onset_samples_cut = detect_onset_librosa(self.onset_envelope_tempo)
 
         # Get note duration for each onset
-        notes_duration = get_note_duration_for_onset(onset_samples_cut, self.audio_buffer)
+        notes_duration_sample = get_note_duration_for_onset(onset_samples_cut, self.audio_buffer)
 
         for onset_s in onset_samples:
             closest_index_onset_tempo = min(range(len(onset_samples_cut)), key=lambda i: abs(onset_samples_cut[i] - onset_s))
-            duration = notes_duration[onset_samples_cut[closest_index_onset_tempo]]
+            duration_sample = notes_duration_sample[onset_samples_cut[closest_index_onset_tempo]]
+            volume = get_volume(onset_s, self.audio_buffer, duration_sample, self.min_rms, self.max_rms)
             freq = get_freq_at_onset_sample(onset_s, freq_index_second, frequencies)
-            self.notes.append(Note(start_sample=onset_s, duration_sample=duration, freq=freq))
+            self.notes.append(Note(start_sample=onset_s, duration_sample=duration_sample, freq=freq, volume=volume))
 
         # Used for debug purposes
         cut_audio_files(onset_samples, self.audio_buffer, self.name, 'librosa')

@@ -12,7 +12,7 @@ class MidiFileGenerator:
             q_time = note.start_second * (tempo / 60)
             q_duration = note.duration_second * (tempo / 60)
 
-            self.mf.addNote(track=0, channel=0, pitch=note.midi_note_number, time=q_time, duration=q_duration, volume=100)
+            self.mf.addNote(track=0, channel=0, pitch=note.midi_note_number, time=q_time, duration=q_duration, volume=note.volume)
 
     def write(self, path):
         logger.info('Writting midi file for ' + path)

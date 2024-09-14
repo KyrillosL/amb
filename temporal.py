@@ -95,6 +95,16 @@ def get_note_duration_for_onset(onset_samples, audio_buffer):
 
     return durations_onsets
 
+def get_volume(onset_samples_cut, audio_buffer, duration_sample, min_rms, max_rms):
+    current_buffer = audio_buffer[onset_samples_cut:onset_samples_cut+duration_sample]
+    print(current_buffer)
+    rms = get_rms(current_buffer)
+    current_max = np.max(rms)
+    print(current_max)
+    # Let's assume we set our minimum midi volume to 50
+    return int((current_max - min_rms) / (max_rms-min_rms) * (127-70) + 70)
+
+
 
 def get_rms(audio_buffer):
     s = librosa.magphase(librosa.stft(audio_buffer, window=np.ones, center=True))[0]

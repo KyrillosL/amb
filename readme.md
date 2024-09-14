@@ -44,7 +44,7 @@ The generated midi file is trimmed to the first note (must be from the used lib)
 Legato notes are not supported yet (`bass_4`). I shouldn't rely only on onset detection to create note, but also on the pitch content variation
 
 ## Todo
-- [ ] [Feature] Implement Level (note velocity)
+- [X] [Feature] Implement Level (note velocity)
 - [ ] [Feature] Adaptive threshold to extract note duration
 - [ ] [Feature] Legato
 - [ ] [Evaluation] Compare different backend (madmom vs librosa) and method to extract features
