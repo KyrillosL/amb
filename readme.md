@@ -54,4 +54,5 @@ Legato notes are not supported yet (`bass_4`). I shouldn't rely only on onset de
 - [ ] [MISC] Output the LabeledAudio class to csv
 - [ ] [MISC] Display all features extracted in a plot
 - [ ] [MISC] Finish to type variables and methods
+- [ ] [MISC] Set back the samplerate to 22050 for the MIDI Extraction (keep 44100 for audio generation ?)
 
